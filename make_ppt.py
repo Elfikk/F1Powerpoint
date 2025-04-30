@@ -1,11 +1,14 @@
-from pptx import Presentation
+from pptx import Presentation, presentation
+from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.util import Inches, Pt
 from pptx.slide import Slide
 from pptx.shapes.autoshape import Shape
 from pptx.enum.text import PP_ALIGN
 
-def make_player_box(shape, name = "AA", score = "69420"):
+import constants2024 as con
+
+def make_player_box(shape: Shape, name = "AA", score = "69420"):
 
     text_frame = shape.text_frame
     text_frame.clear()
@@ -15,6 +18,7 @@ def make_player_box(shape, name = "AA", score = "69420"):
     run.text = f'{name}: {score}'
 
 def make_player_layout(
+        prs: presentation,
         slide: Slide,
         num_players: int = 7,
         available_h: float = 6/25
@@ -40,7 +44,6 @@ def make_player_layout(
 
     shape_tree = slide.shapes
 
-    print(k, divs)
     width = 2 / divs * prs.slide_width
     height = delta_h * prs.slide_height
 
@@ -73,33 +76,108 @@ def set_player_detail(players: list[tuple[str, int]], player_boxes: list[Shape])
         run = p.add_run()
         run.text = f'{player_name}: {player_score}'
 
-prs = Presentation()
-# print(prs.slide_width, prs.slide_height)
-prs.slide_width = 12192 * 1000
-blank_slide_layout = prs.slide_layouts[6]
-slide = prs.slides.add_slide(blank_slide_layout)
+        player_box.fill.solid()
+        rgb = con.PLAYERS_TO_COLOURS[player_name]
+        outline_rgb = (int(0.8 * colour) for colour in rgb)
+        player_box.fill.fore_color.rgb = RGBColor(*rgb)
+        player_box.line.color.rgb = RGBColor(*outline_rgb)
 
-shapes = slide.shapes
+def make_title_box(slide_title: str, title_box: Shape):
 
-# left = top = width = height = Inches(1.0)
+    text_frame = title_box.text_frame
+    p = text_frame.paragraphs[0]
+    p.alignment = PP_ALIGN.CENTER
+    run = p.add_run()
+    run.text = slide_title
 
-left = prs.slide_width / 13
-top = 19 / 25 * prs.slide_height
-width = 2 * prs.slide_width / 13
-height = 3 / 25 * prs.slide_height
+def make_title_layout(prs, slide: Slide, available_h = 5 / 25) -> Shape:
+    shapes = slide.shapes
+    title_shape = shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, available_h * prs.slide_height)
+    return title_shape
 
-player_boxes = make_player_layout(slide, 7)
+def make_round_roundup_content(player_scores: dict[str, int]):
+    # For any finished round, take the scores and display them
+    # Then display final scores
+    pass
 
-players = [
-    ("Be", 1),
-    ("Ca", 2),
-    ("Da", 3),
-    ("Ja", 4),
-    ("Jo", 5),
-    ("Ka", 6),
-    ("Su", 7),
-]
+def make_constructor_content(
+    real_order: dict[str, int],
+    player_order: dict[str, int],
+    diffs: dict[str, int],
+    player_score: int):
+    # The constructor content slide consists of
+    # 1. The real constructor order on the LHS
+    # 2. The player's predicted constructor order on the RHS
+    # 3. The differences squared between the two
+    # 4. The player's score.
+    pass
 
-set_player_detail(players, player_boxes)
+def make_drivers_content(
+    real_order: dict[str, int],
+    player_order: dict[str, int],
+    diffs: dict[str, int],
+    player_score: int):
+    # The driver's championship slides consist of
+    # 1. The real driver's order spread over two pages.
+    # 2. The player's predicted positions next to each driver.
+    # 3. The diffs squared.
+    # 4. The player's score.
+    pass
 
-prs.save("text.pptx")
+def make_six_content(
+    partial_orders: list[dict[str, int]],
+    player_preds: list[dict[str, int]],
+    player_scores: dict[str, int]
+):
+    # This one is a little bit more convoluted.
+    pass
+
+def bool_content():
+    # This one is a little bit more convoluted.
+    pass
+
+def superlative_content_drivers():
+    pass
+
+def superlative_content_teams():
+    pass
+
+def five_races_content():
+    pass
+
+if __name__ == "__main__":
+
+    prs = Presentation()
+    # print(prs.slide_width, prs.slide_height)
+    prs.slide_width = 12192 * 1000
+    blank_slide_layout = prs.slide_layouts[6]
+    slide = prs.slides.add_slide(blank_slide_layout)
+
+    shapes = slide.shapes
+
+    # left = top = width = height = Inches(1.0)
+
+    left = prs.slide_width / 13
+    top = 19 / 25 * prs.slide_height
+    width = 2 * prs.slide_width / 13
+    height = 3 / 25 * prs.slide_height
+
+    player_boxes = make_player_layout(slide, 7)
+
+    players = [
+        ("Benedict", 1),
+        ("Carla", 2),
+        ("Damian", 3),
+        ("Jarek", 4),
+        ("Josh", 5),
+        ("Kacper", 6),
+        ("Suley", 7),
+    ]
+
+    set_player_detail(players, player_boxes)
+
+    title = make_title_layout(slide)
+
+    make_title_box("Example Title", title)
+
+    prs.save("text.pptx")

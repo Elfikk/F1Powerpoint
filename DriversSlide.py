@@ -1,11 +1,19 @@
+# Local
 import constants2025 as con
+from DriverReader import DCReader2025
 from make_ppt import make_title_box, make_title_layout
+
+# Third Party
+import openpyxl as px
 
 from pptx import presentation, Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches
+
+# Standard Lib
+from pathlib import Path
 
 class DriverChampionshipSlide():
     '''
@@ -118,17 +126,22 @@ if __name__ == "__main__":
     prs.slide_width = 12192 * 1000
     blank_slide_layout = prs.slide_layouts[6]
 
-    driver_order = ["Lando Norris", "Max Verstappen", "Oscar Piastri"][::-1]
+    spreadsheet_path = Path("C:\Projekty\Coding\Python\F1PredsPPT\F12024 Predictions Tracking.xlsx")
+    wb = px.open(spreadsheet_path, data_only=True)
 
-    player_preds = {
-        "Benedict": {"Oscar Piastri" : (1, 8), "Max Verstappen": (2, 10), "Lando Norris": (3, 8)},
-        "Jarek": {"Lando Norris": (1, 10), "Oscar Piastri": (2, 9), "Max Verstappen": (3, 9)},
-        "Carla": {"Lando Norris": (1, 10), "Oscar Piastri": (2, 9), "Max Verstappen": (3, 9)},
-        "David": {"Lando Norris": (1, 10), "Oscar Piastri": (2, 9), "Max Verstappen": (3, 9)},
-        "Damian": {"Lando Norris": (1, 10), "Oscar Piastri": (2, 9), "Max Verstappen": (3, 9)},
-        "Suley": {"Lando Norris": (1, 10), "Oscar Piastri": (2, 9), "Max Verstappen": (3, 9)},
-        "Josh": {"Lando Norris": (1, 10), "Oscar Piastri": (2, 9), "Max Verstappen": (3, 9)}
-    }
+    dc_reader = DCReader2025(wb["DriverPredictions"])
+    dc_reader.gather_data()
+    dc_data = dc_reader.format_to_slide()
+
+    driver_order = dc_data[0]
+    driver_order = driver_order[::-1]
+
+    print(driver_order)
+
+    player_preds = dc_data[1]
+    player_preds.pop("Kacper")
+
+    print(player_preds)
 
     running_scores = {}
     for player in player_preds:

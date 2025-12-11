@@ -19,11 +19,20 @@ class ChampionshipReader2025():
         self.competitor_real_order = ["" for i in range(number_of_competitors)]
         for i, order in enumerate(actual_order):
             self.competitor_real_order[order-1] = competitors[i]
+        self.competitor_real_order = self.competitor_real_order[::-1]
         self.player_orders = player_orders
         self.player_scores = player_scores
 
+        self.running_scores = {}
+        for player in player_orders:
+            self.running_scores[player] = {}
+            total_score = 0
+            for competitor in self.competitor_real_order:
+                total_score += player_orders[player][competitor][1]
+                self.running_scores[player][competitor] = total_score
+
     def format_to_slide(self):
-        return (self.competitor_real_order, self.player_orders, self.player_scores)
+        return (self.competitor_real_order, self.player_orders, self.running_scores, self.player_scores)
 
     def get_scores(self):
         return self.player_scores

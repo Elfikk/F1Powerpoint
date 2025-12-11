@@ -134,22 +134,11 @@ if __name__ == "__main__":
     dc_data = dc_reader.format_to_slide()
 
     driver_order = dc_data[0]
-    driver_order = driver_order[::-1]
-
-    print(driver_order)
 
     player_preds = dc_data[1]
     player_preds.pop("Kacper")
 
-    print(player_preds)
-
-    running_scores = {}
-    for player in player_preds:
-        running_scores[player] = {}
-        total_score = 0
-        for driver in driver_order:
-            total_score += player_preds[player][driver][1]
-            running_scores[player][driver] = total_score
+    running_scores = dc_data[2]
 
     base_title = "Driver's Championship"
 

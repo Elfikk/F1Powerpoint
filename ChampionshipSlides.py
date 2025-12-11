@@ -1,6 +1,6 @@
 # Local
 import constants2025 as con
-from DriverReader import DCReader2025
+from ChampionshipReader import ChampionshipReader2025
 from make_ppt import make_title_box, make_title_layout
 
 # Third Party
@@ -15,26 +15,26 @@ from pptx.util import Inches
 # Standard Lib
 from pathlib import Path
 
-class DriverChampionshipSlide():
+class ChampionshipSlides():
     '''
-    Revised style of Driver Championship Slides.
-    Each Driver is ran through in reverse championship order, with individual
+    Revised style of Championship Slides.
+    Each Competitor is ran through in reverse championship order, with individual
     people's predictions and scores displayed for each.
     '''
 
     def __init__(
             self,
             prs: presentation.Presentation,
-            driver_order: list[str],
+            competitor_order: list[str],
             player_preds: dict[str, dict[str, tuple[int, int]]],
             running_scores: dict[str, dict[str, int]],
             base_title: str
         ):
         self.prs = prs
         blank_slide_layout = prs.slide_layouts[6]
-        self.slides = [prs.slides.add_slide(blank_slide_layout) for driver in driver_order]
+        self.slides = [prs.slides.add_slide(blank_slide_layout) for competitor in competitor_order]
 
-        self.driver_order = driver_order
+        self.competitor_order = competitor_order
         self.player_preds = player_preds
         self.running_scores = running_scores
         self.base_title = base_title
@@ -96,7 +96,7 @@ class DriverChampionshipSlide():
                 j += 1
 
     def make_content(self):
-        for i, driver in enumerate(self.driver_order):
+        for i, competitor in enumerate(self.competitor_order):
             player_boxes = self.player_boxes[i]
             for player in self.player_preds:
                 player_box = player_boxes[player]
@@ -104,15 +104,15 @@ class DriverChampionshipSlide():
                 p = text_frame.paragraphs[0]
                 p.alignment = PP_ALIGN.CENTER
                 run = p.add_run()
-                pos, score = self.player_preds[player][driver]
-                running_score = self.running_scores[player][driver]
+                pos, score = self.player_preds[player][competitor]
+                running_score = self.running_scores[player][competitor]
                 run.text = f"{player} - P{pos}\n{running_score} (+{score})"
 
     def make_titles(self):
-        for i, driver in enumerate(driver_order):
+        for i, competitor in enumerate(self.competitor_order):
             slide = self.slides[i]
             title_box = make_title_layout(self.prs, slide, 4/25)
-            make_title_box(f"{self.base_title}: P{len(driver_order) - i} - {driver}", title_box)
+            make_title_box(f"{self.base_title}: P{len(self.competitor_order) - i} - {competitor}", title_box)
 
     def make_slide(self):
         self.make_boxes()
@@ -129,8 +129,8 @@ if __name__ == "__main__":
     spreadsheet_path = Path("C:\Projekty\Coding\Python\F1PredsPPT\F12024 Predictions Tracking.xlsx")
     wb = px.open(spreadsheet_path, data_only=True)
 
-    dc_reader = DCReader2025(wb["DriverPredictions"])
-    dc_reader.gather_data()
+    dc_reader = ChampionshipReader2025(wb["ConstructorPredictions"])
+    dc_reader.gather_data(number_of_competitors=10)
     dc_data = dc_reader.format_to_slide()
 
     driver_order = dc_data[0]
@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     base_title = "Driver's Championship"
 
-    drivers_slide = DriverChampionshipSlide(
+    drivers_slide = ChampionshipSlides(
         prs,
         driver_order,
         player_preds,

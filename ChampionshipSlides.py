@@ -126,17 +126,16 @@ if __name__ == "__main__":
     prs.slide_width = 12192 * 1000
     blank_slide_layout = prs.slide_layouts[6]
 
-    spreadsheet_path = Path("C:\Projekty\Coding\Python\F1PredsPPT\F12024 Predictions Tracking.xlsx")
+    spreadsheet_path = Path("C:\Projekty\Coding\Python\F1PredsPPT\F12025 Predictions Tracking.xlsx")
     wb = px.open(spreadsheet_path, data_only=True)
 
-    dc_reader = ChampionshipReader2025(wb["ConstructorPredictions"])
-    dc_reader.gather_data(number_of_competitors=10)
+    dc_reader = ChampionshipReader2025(wb["DriverPredictions"])
+    dc_reader.gather_data(number_of_competitors=20)
     dc_data = dc_reader.format_to_slide()
 
     driver_order = dc_data[0]
 
     player_preds = dc_data[1]
-    player_preds.pop("Kacper")
 
     running_scores = dc_data[2]
 

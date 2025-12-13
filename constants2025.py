@@ -2,7 +2,7 @@ PLAYERS_TO_COLOURS = {
     "Benedict": (4, 2, 115), #"midnightblue",
     "Carla": (232, 0, 45), #"red",
     "Damian": (250, 194, 5), #"yellow",
-    "David": (19, 234, 201), #"cyan",
+    "David": (255, 105, 180), #"hotpink",
     "Jarek": (2, 143, 30), #"forestgreen",
     "Josh": (255, 91, 0), #"orange",
     "Suley": (154, 14, 234) #"purple"

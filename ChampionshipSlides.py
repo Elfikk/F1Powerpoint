@@ -2,6 +2,7 @@
 import constants2025 as con
 from ChampionshipReader import ChampionshipReader2025
 from make_ppt import make_title_box, make_title_layout
+from Slide import Slide
 
 # Third Party
 import openpyxl as px
@@ -15,7 +16,7 @@ from pptx.util import Inches
 # Standard Lib
 from pathlib import Path
 
-class ChampionshipSlides():
+class ChampionshipSlides(Slide):
     '''
     Revised style of Championship Slides.
     Each Competitor is ran through in reverse championship order, with individual
@@ -113,12 +114,6 @@ class ChampionshipSlides():
             slide = self.slides[i]
             title_box = make_title_layout(self.prs, slide, 4/25)
             make_title_box(f"{self.base_title}: P{len(self.competitor_order) - i} - {competitor}", title_box)
-
-    def make_slide(self):
-        self.make_boxes()
-        self.make_layout()
-        self.make_content()
-        self.make_titles()
 
 if __name__ == "__main__":
 

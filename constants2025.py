@@ -16,7 +16,7 @@ TEAMS_TO_COLOURS = {
     "Aston Martin": "#229971",
     "Alpine": "#2173B8",
     "Williams": "#64C4FF",
-    "Visa RB": "#6692FF",
+    "Racing Bulls": "#6692FF",
     "Stake": "#52E252",
     "Haas": "#B6BABD"
 }
@@ -47,6 +47,29 @@ RACES = [
     "Qatar",
     "Abu Dhabi"
 ]
+
+DRIVERS_TO_TEAMS = {
+    "Lando Norris": "McLaren",
+    "Oscar Piastri": "McLaren",
+    "George Russell": "Mercedes",
+    "Kimi Antonelli": "Mercedes",
+    "Max Verstappen": "Red Bull",
+    "Yuki Tsunoda": "Red Bull",
+    "Charles Leclerc": "Ferrari",
+    "Lewis Hamilton": "Ferrari",
+    "Alexander Albon": "Williams",
+    "Carlos Sainz": "Williams",
+    "Isack Hadjar": "Racing Bulls",
+    "Liam Lawson": "Racing Bulls",
+    "Fernando Alonso": "Aston Martin",
+    "Lance Stroll": "Aston Martin",
+    "Oliver Bearman": "Haas",
+    "Esteban Ocon": "Haas",
+    "Nico Hulkenberg": "Stake",
+    "Gabriel Bortoleto": "Stake",
+    "Pierre Gasly": "Alpine",
+    "Jack Doohan": "Alpine"
+}
 
 NUMBER_OF_DRIVERS = 20
 NUMBER_OF_PLAYERS = len(PLAYERS_TO_COLOURS)

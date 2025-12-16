@@ -3,6 +3,7 @@ from pptx import Presentation
 
 from pathlib import Path
 
+from BooleanSlide import BooleanSlide
 import constants as con
 from ChampionshipReader import ChampionshipReader2025
 from ChampionshipSlides import ChampionshipSlides
@@ -174,17 +175,8 @@ def main():
     print(q2_data[0])
     print(q2_data[1])
 
-    q2_slides = st.TrueFalseSlide(prs, *q2_data, False)
+    q2_slides = BooleanSlide(prs, *q2_data, title_text)
     q2_slides.make_slide()
-
-    title_shape = make_title_layout(prs, q2_slides.slide, 4/25)
-    make_title_box(title_text, title_shape)
-
-    q2_slides_score = st.TrueFalseSlide(prs, *q2_data, True)
-    q2_slides_score.make_slide()
-
-    title_shape = make_title_layout(prs, q2_slides_score.slide, 4/25)
-    make_title_box(title_text, title_shape)
 
     new_scores = q2_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
@@ -204,17 +196,8 @@ def main():
     pole_reader.gather_data()
     pole_data = pole_reader.format_to_slide()
 
-    pole_slides = st.TrueFalseSlide(prs, *pole_data, False)
+    pole_slides = BooleanSlide(prs, *pole_data, title_text)
     pole_slides.make_slide()
-
-    title_shape = make_title_layout(prs, pole_slides.slide, 4/25)
-    make_title_box(title_text, title_shape)
-
-    pole_slides_score = st.TrueFalseSlide(prs, *pole_data, True)
-    pole_slides_score.make_slide()
-
-    title_shape = make_title_layout(prs, pole_slides_score.slide, 4/25)
-    make_title_box(title_text, title_shape)
 
     new_scores = pole_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
@@ -234,17 +217,8 @@ def main():
     pens1dnf_reader.gather_data()
     pens1dnf_data = pens1dnf_reader.format_to_slide()
 
-    pens1dnf_slides = st.TrueFalseSlide(prs, *pens1dnf_data, False)
+    pens1dnf_slides = BooleanSlide(prs, *pens1dnf_data, title_text)
     pens1dnf_slides.make_slide()
-
-    title_shape = make_title_layout(prs, pens1dnf_slides.slide, 4/25)
-    make_title_box(title_text, title_shape)
-
-    pens1dnf_slides_score = st.TrueFalseSlide(prs, *pens1dnf_data, True)
-    pens1dnf_slides_score.make_slide()
-
-    title_shape = make_title_layout(prs, pens1dnf_slides_score.slide, 4/25)
-    make_title_box(title_text, title_shape)
 
     new_scores = pens1dnf_reader.get_scores()
     print(running_scores)
@@ -265,17 +239,8 @@ def main():
     win_reader.gather_data()
     win_data = win_reader.format_to_slide()
 
-    win_slides = st.TrueFalseSlide(prs, *win_data, False)
+    win_slides = BooleanSlide(prs, *win_data, title_text)
     win_slides.make_slide()
-
-    title_shape = make_title_layout(prs, win_slides.slide, 4/25)
-    make_title_box(title_text, title_shape)
-
-    win_slides_score = st.TrueFalseSlide(prs, *win_data, True)
-    win_slides_score.make_slide()
-
-    title_shape = make_title_layout(prs, win_slides_score.slide, 4/25)
-    make_title_box(title_text, title_shape)
 
     new_scores = win_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
@@ -296,17 +261,8 @@ def main():
     dotd_reader.gather_data()
     dotd_data = dotd_reader.format_to_slide()
 
-    dotd_slides = st.TrueFalseSlide(prs, *dotd_data, False)
+    dotd_slides = BooleanSlide(prs, *dotd_data, title_text)
     dotd_slides.make_slide()
-
-    title_shape = make_title_layout(prs, dotd_slides.slide, 4/25)
-    make_title_box(title_text, title_shape)
-
-    dotd_slides_score = st.TrueFalseSlide(prs, *dotd_data, True)
-    dotd_slides_score.make_slide()
-
-    title_shape = make_title_layout(prs, dotd_slides_score.slide, 4/25)
-    make_title_box(title_text, title_shape)
 
     new_scores = dotd_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)

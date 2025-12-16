@@ -208,7 +208,7 @@ class BooleanSlide(Slide):
                         run = p.add_run()
                         run.text = text
                         run.font.size = Pt(18)
-                        run.font.color.rgb = RGBColor(255, 0, 255)
+                        run.font.color.rgb = RGBColor(255, 255, 0)
 
         for driver, box in self.counts.items():
             box = self.counts[driver]
@@ -218,13 +218,12 @@ class BooleanSlide(Slide):
             run = p.add_run()
             run.text = str(self.driver_cond[driver][0])
             run.font.size = Pt(10)
-            run.font.color.rgb = RGBColor(0, 0, 0)
+            run.font.color.rgb = RGBColor(255, 255, 255)
 
     def make_titles(self):
         for slide in self.slides:
             title_box = make_title_layout(self.prs, slide, 4/25)
-            make_title_box(f"True/False: {self.base_title}", title_box)
-
+            make_title_box(self.base_title, title_box)
 
 if __name__ == "__main__":
 

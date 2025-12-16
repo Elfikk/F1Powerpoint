@@ -1,5 +1,5 @@
 # Local
-import constants2025 as con
+import constants as con
 from make_ppt import make_title_box, make_title_layout
 from Slide import Slide
 from slideInfoGathering import TrueFalseReader

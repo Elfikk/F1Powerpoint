@@ -1,5 +1,5 @@
 # Local
-import constants2025 as con
+import constants as con
 from ChampionshipReader import ChampionshipReader2025
 from make_ppt import make_title_box, make_title_layout
 from Slide import Slide
@@ -74,7 +74,6 @@ class ChampionshipSlides(Slide):
 
         for i in range(len(self.slides)):
             j = 0
-            print(self.player_boxes)
             for player, box in self.player_boxes[i].items():
                 if j < len(top_ls):
                     left = int(top_ls[j] / divs * self.prs.slide_width)
@@ -117,7 +116,7 @@ class ChampionshipSlides(Slide):
 
 if __name__ == "__main__":
 
-    prs = Presentation()
+    prs = Presentation("examples/ThemeExample.pptx")
     prs.slide_width = 12192 * 1000
     blank_slide_layout = prs.slide_layouts[6]
 

@@ -1,7 +1,7 @@
 import openpyxl as px
 
-import constants2024 as con
-from constants2024 import NUMBER_OF_DRIVERS, NUMBER_OF_PLAYERS, NUMBER_OF_TEAMS
+import constants as con
+from constants import NUMBER_OF_DRIVERS, NUMBER_OF_PLAYERS, NUMBER_OF_TEAMS
 
 class H2HReader():
 
@@ -97,7 +97,7 @@ class CCReader():
             [self.sheet.cell(i+2,column = j+2).internal_value for i in range(1, NUMBER_OF_TEAMS + 1)]
             for j in range(1, NUMBER_OF_PLAYERS+1)}
         player_scores = {self.sheet.cell(2, column = j).internal_value:
-            self.sheet.cell(15, column = j).internal_value for j in range(10, 10+NUMBER_OF_PLAYERS)}
+            self.sheet.cell(13, column = j).internal_value for j in range(10, 10+NUMBER_OF_PLAYERS)}
 
         self.teams_real_order = {teams[i]: actual_order[i] for i in range(NUMBER_OF_TEAMS)}
         self.player_orders = {player: {teams[j]: player_orders[player][j] for j in range(NUMBER_OF_TEAMS)} for player in player_orders}
@@ -120,7 +120,7 @@ class DCReader():
             [self.sheet.cell(i + 2, column = j+2).internal_value for i in range(1, NUMBER_OF_DRIVERS + 1)]
             for j in range(1, NUMBER_OF_PLAYERS+1)}
         player_scores = {self.sheet.cell(2, column = j).internal_value:
-            self.sheet.cell(25, column = j).internal_value for j in range(10, 10+NUMBER_OF_PLAYERS)}
+            self.sheet.cell(23, column = j).internal_value for j in range(10, 10+NUMBER_OF_PLAYERS)}
 
         self.driver_real_order = {drivers[i]: actual_order[i] for i in range(NUMBER_OF_DRIVERS)}
         self.player_orders = {player: {drivers[j]: player_orders[player][j] for j in range(NUMBER_OF_DRIVERS)} for player in player_orders}
@@ -133,14 +133,19 @@ class DCReader():
         return self.player_scores
 
 class TrueFalseReader():
-    def __init__(self, sheet, shift = 24):
+    def __init__(self, sheet, shift = 7):
         self.sheet = sheet
         self.shift = shift
 
     def gather_data(self):
         self.driver_to_cond = {self.sheet.cell(i + 2, column = 1).internal_value: (self.sheet.cell(i + 2, column = 2).internal_value, self.sheet.cell(i + 2, column = 3).internal_value) for i in range(1, NUMBER_OF_DRIVERS + 1)}
-        self.player_to_truths = {self.sheet.cell(2, column = 4 + self.shift + j).internal_value: [self.sheet.cell(i+2, column = 1).internal_value for i in range(1, NUMBER_OF_DRIVERS+1) if self.sheet.cell(i+2, column = 4 + self.shift + j).internal_value] for j in range(7)}
-        self.player_scores = {self.sheet.cell(31 + i, 1).internal_value: self.sheet.cell(31 + i, 3).internal_value for i in range(NUMBER_OF_PLAYERS)}
+        self.player_to_truths = {
+            self.sheet.cell(2, column = 4 + j).internal_value:
+            [self.sheet.cell(i+2, column = 1).internal_value
+             for i in range(1, NUMBER_OF_DRIVERS+1)
+             if self.sheet.cell(i+2, column = 4 + j).internal_value]
+            for j in range(NUMBER_OF_PLAYERS)}
+        self.player_scores = {self.sheet.cell(31 + i, 1).internal_value: self.sheet.cell(31 + i, 2).internal_value for i in range(NUMBER_OF_PLAYERS)}
 
     def format_to_slide(self):
         return (self.driver_to_cond, self.player_to_truths, self.player_scores)

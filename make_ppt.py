@@ -6,7 +6,7 @@ from pptx.slide import Slide
 from pptx.shapes.autoshape import Shape
 from pptx.enum.text import PP_ALIGN
 
-import constants2024 as con
+import constants as con
 
 def make_player_box(shape: Shape, name = "AA", score = "69420"):
 

@@ -1,4 +1,4 @@
-import constants2025 as con
+import constants as con
 
 class ChampionshipReader2025():
     def __init__(self, sheet):

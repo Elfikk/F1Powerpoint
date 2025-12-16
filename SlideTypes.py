@@ -6,8 +6,8 @@ from pptx.slide import Slide
 from pptx.shapes.autoshape import Shape
 from pptx.enum.text import PP_ALIGN
 
-import constants2024 as con
-from constants2024 import NUMBER_OF_DRIVERS, NUMBER_OF_PLAYERS, NUMBER_OF_TEAMS
+import constants as con
+from constants import NUMBER_OF_DRIVERS, NUMBER_OF_PLAYERS, NUMBER_OF_TEAMS
 from make_ppt import make_title_box, make_title_layout
 
 class IntroSlide():

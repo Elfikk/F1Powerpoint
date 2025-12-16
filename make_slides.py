@@ -3,7 +3,9 @@ from pptx import Presentation
 
 from pathlib import Path
 
-import constants2024 as con
+import constants as con
+from ChampionshipReader import ChampionshipReader2025
+from ChampionshipSlides import ChampionshipSlides
 from make_ppt import (
     make_title_layout,
     make_title_box,
@@ -19,10 +21,10 @@ def update_score(running_score, new_scores):
 
 def main():
 
-    spreadsheet_path = Path("C:\Projekty\Coding\Python\F1PredsPPT\F12024 Predictions Tracking.xlsx")
+    spreadsheet_path = Path("C:\Projekty\Coding\Python\F1PredsPPT\F12025 Predictions Tracking.xlsx")
     wb = px.open(spreadsheet_path, data_only=True)
 
-    prs = Presentation()
+    prs = Presentation("examples/ThemeExample.pptx")
     prs.slide_width = 12192 * 1000
 
     running_scores = {player: "0" for player in con.PLAYERS_TO_COLOURS}
@@ -106,14 +108,21 @@ def main():
                           running_scores)
     intro.make_slide()
 
-    cc_reader = sig.CCReader(wb["ConstructorPredictions"])
-    cc_reader.gather_data()
+    cc_reader = ChampionshipReader2025(wb["ConstructorPredictions"])
+    cc_reader.gather_data(number_of_competitors=10)
     cc_data = cc_reader.format_to_slide()
 
-    cc_slides = st.CCSlides(prs, *cc_data)
-    cc_slides.make_slide()
+    drivers_slide = ChampionshipSlides(
+        prs,
+        cc_data[0],
+        cc_data[1],
+        cc_data[2],
+        "Constructor's Championship")
+
+    drivers_slide.make_slide()
 
     new_scores = cc_reader.get_scores()
+    print(new_scores)
     running_scores = update_score(running_scores, new_scores)
     cc_roundup = st.RoundUpSlide(prs, running_scores, "Constructor's Championship")
 
@@ -125,35 +134,22 @@ def main():
                           running_scores)
     intro.make_slide()
 
-    dc_reader = sig.DCReader(wb["DriverPredictions"])
-    dc_reader.gather_data()
+    dc_reader = ChampionshipReader2025(wb["DriverPredictions"])
+    dc_reader.gather_data(number_of_competitors=20)
     dc_data = dc_reader.format_to_slide()
 
-    dc_slides = st.DCSlides(prs, *dc_data)
-    dc_slides.make_slide()
+    drivers_slide = ChampionshipSlides(
+        prs,
+        dc_data[0],
+        dc_data[1],
+        dc_data[2],
+        "Driver's Championship")
+
+    drivers_slide.make_slide()
 
     new_scores = dc_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
     dc_roundup = st.RoundUpSlide(prs, running_scores, "Driver's Championship")
-
-    ## First 6 Races
-
-    intro = st.IntroSlide(prs,
-                          "N After N",
-                          qd.descriptions["First6Races"],
-                          running_scores)
-    intro.make_slide()
-
-    first6_reader = sig.First6RacesReader(wb["First6Races"])
-    first6_reader.gather_data()
-    first6_data = first6_reader.format_to_slide()
-
-    first6_slides = st.First6RacesSlides(prs, *first6_data)
-    first6_slides.make_slide()
-
-    new_scores = first6_reader.get_scores()
-    running_scores = update_score(running_scores, new_scores)
-    first6_roundup = st.RoundUpSlide(prs, running_scores, "N After N")
 
     ## True False
 
@@ -163,37 +159,36 @@ def main():
                           running_scores)
     intro.make_slide()
 
-    # Podiums
-
-    title_text = f"True/False: Podiums"
-
+    # Q2 Eliminations
+    title_text = f"True/False: 5+ Q2 Eliminations"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["Podiums"],
+                          qd.descriptions["Q2Elims"],
                           running_scores)
     intro.make_slide()
 
-    podium_reader = sig.TrueFalseReader(wb["Podiums"])
-    podium_reader.gather_data()
-    podium_data = podium_reader.format_to_slide()
+    q2_reader = sig.TrueFalseReader(wb["Q2Elims"])
+    q2_reader.gather_data()
+    q2_data = q2_reader.format_to_slide()
 
-    podium_slides = st.TrueFalseSlide(prs, *podium_data, False)
-    podium_slides.make_slide()
+    print(q2_data[0])
+    print(q2_data[1])
 
-    title_shape = make_title_layout(prs, podium_slides.slide, 4/25)
+    q2_slides = st.TrueFalseSlide(prs, *q2_data, False)
+    q2_slides.make_slide()
+
+    title_shape = make_title_layout(prs, q2_slides.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    podium_slides_score = st.TrueFalseSlide(prs, *podium_data, True)
-    podium_slides_score.make_slide()
+    q2_slides_score = st.TrueFalseSlide(prs, *q2_data, True)
+    q2_slides_score.make_slide()
 
-    title_shape = make_title_layout(prs, podium_slides_score.slide, 4/25)
+    title_shape = make_title_layout(prs, q2_slides_score.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    new_scores = podium_reader.get_scores()
-    print(running_scores)
-    print(new_scores)
+    new_scores = q2_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    podium_roundup = st.RoundUpSlide(prs, running_scores, "Podiums")
+    q2_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
     # Pole Positions
 
@@ -225,94 +220,97 @@ def main():
     running_scores = update_score(running_scores, new_scores)
     pole_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
-    # FLs
+    # Lap1DNF
 
-    title_text = f"True/False: Fastest Laps"
+    title_text = f"True/False: Lap 1 DNFs"
+
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["FLs"],
+                          qd.descriptions["Lap1DNF"],
                           running_scores)
     intro.make_slide()
 
-    fl_reader = sig.TrueFalseReader(wb["FLs"])
-    fl_reader.gather_data()
-    fl_data = fl_reader.format_to_slide()
+    pens1dnf_reader = sig.TrueFalseReader(wb["Lap1DNF"])
+    pens1dnf_reader.gather_data()
+    pens1dnf_data = pens1dnf_reader.format_to_slide()
 
-    fl_slides = st.TrueFalseSlide(prs, *fl_data, False)
-    fl_slides.make_slide()
+    pens1dnf_slides = st.TrueFalseSlide(prs, *pens1dnf_data, False)
+    pens1dnf_slides.make_slide()
 
-    title_shape = make_title_layout(prs, fl_slides.slide, 4/25)
+    title_shape = make_title_layout(prs, pens1dnf_slides.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    fl_slides_score = st.TrueFalseSlide(prs, *fl_data, True)
-    fl_slides_score.make_slide()
+    pens1dnf_slides_score = st.TrueFalseSlide(prs, *pens1dnf_data, True)
+    pens1dnf_slides_score.make_slide()
 
-    title_shape = make_title_layout(prs, fl_slides_score.slide, 4/25)
+    title_shape = make_title_layout(prs, pens1dnf_slides_score.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    new_scores = fl_reader.get_scores()
+    new_scores = pens1dnf_reader.get_scores()
+    print(running_scores)
+    print(new_scores)
     running_scores = update_score(running_scores, new_scores)
-    fl_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    pens1dnf_roundup = st.RoundUpSlide(prs, running_scores, "Lap 1 DNFs")
 
-    # Q1 Eliminations
-    title_text = f"True/False: 5+ Q1 Eliminations"
+    # Wins
+
+    title_text = f"True/False: Wins"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["Q1Elims"],
+                          qd.descriptions["Wins"],
                           running_scores)
     intro.make_slide()
 
-    q1_reader = sig.TrueFalseReader(wb["Q1Elims"])
-    q1_reader.gather_data()
-    q1_data = q1_reader.format_to_slide()
+    win_reader = sig.TrueFalseReader(wb["Wins"])
+    win_reader.gather_data()
+    win_data = win_reader.format_to_slide()
 
-    q1_slides = st.TrueFalseSlide(prs, *q1_data, False)
-    q1_slides.make_slide()
+    win_slides = st.TrueFalseSlide(prs, *win_data, False)
+    win_slides.make_slide()
 
-    title_shape = make_title_layout(prs, q1_slides.slide, 4/25)
+    title_shape = make_title_layout(prs, win_slides.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    q1_slides_score = st.TrueFalseSlide(prs, *q1_data, True)
-    q1_slides_score.make_slide()
+    win_slides_score = st.TrueFalseSlide(prs, *win_data, True)
+    win_slides_score.make_slide()
 
-    title_shape = make_title_layout(prs, q1_slides_score.slide, 4/25)
+    title_shape = make_title_layout(prs, win_slides_score.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    new_scores = q1_reader.get_scores()
+    new_scores = win_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    q1_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    win_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
-    # Monaco
-    title_text = f"True/False: Monaco Top 10"
+    # DOTD
+    title_text = f"True/False: Driver of the Day"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["Monaco"],
+                          qd.descriptions["DOTD"],
                           running_scores)
     intro.make_slide()
 
-    monaco_reader = sig.TrueFalseReader(
-        wb["Monaco"],
+    dotd_reader = sig.TrueFalseReader(
+        wb["DOTD"],
         shift = 0
         )
-    monaco_reader.gather_data()
-    monaco_data = monaco_reader.format_to_slide()
+    dotd_reader.gather_data()
+    dotd_data = dotd_reader.format_to_slide()
 
-    monaco_slides = st.TrueFalseSlide(prs, *monaco_data, False)
-    monaco_slides.make_slide()
+    dotd_slides = st.TrueFalseSlide(prs, *dotd_data, False)
+    dotd_slides.make_slide()
 
-    # title_text = f"True/False: Monaco Top 10"
-    title_shape = make_title_layout(prs, monaco_slides.slide, 4/25)
+    title_shape = make_title_layout(prs, dotd_slides.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    monaco_slides_score = st.TrueFalseSlide(prs, *monaco_data, True)
-    monaco_slides_score.make_slide()
+    dotd_slides_score = st.TrueFalseSlide(prs, *dotd_data, True)
+    dotd_slides_score.make_slide()
 
-    title_shape = make_title_layout(prs, monaco_slides_score.slide, 4/25)
+    title_shape = make_title_layout(prs, dotd_slides_score.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    new_scores = monaco_reader.get_scores()
+    new_scores = dotd_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    monaco_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    dotd_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
     ## Superlatives
 
@@ -322,6 +320,8 @@ def main():
                           running_scores)
     intro.make_slide()
 
+    prs.save("konkurenz2025.pptx")
+
     # DNFs
     title_text = f"Superlatives: DNFs"
     intro = st.IntroSlide(prs,
@@ -330,7 +330,7 @@ def main():
                           running_scores)
     intro.make_slide()
 
-    dnf_reader = sig.SuperlativeDriverReader(wb["DNFs"])
+    dnf_reader = sig.SuperlativeDriverReader(wb["DNFs"], player_col = 29)
     dnf_reader.gather_data()
     dnf_data = dnf_reader.format_to_slide()
 
@@ -344,34 +344,6 @@ def main():
     running_scores = update_score(running_scores, new_scores)
     dnf_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
-    # Laps
-
-    title_text = f"Superlatives: Lap %"
-    intro = st.IntroSlide(prs,
-                          title_text,
-                          qd.descriptions["Laps"],
-                          running_scores)
-    intro.make_slide()
-
-    lap_reader = sig.SuperlativeDriverReader(
-        wb["Laps"],
-        metric_col=4,
-        rank_col=5,
-        player_col=32
-        )
-    lap_reader.gather_data()
-    lap_data = lap_reader.format_to_slide()
-
-    lap_slide = st.SuperlativeSlide(prs, *lap_data)
-    lap_slide.make_slide()
-
-    title_shape = make_title_layout(prs, lap_slide.slide, 4/25)
-    make_title_box(title_text, title_shape)
-
-    new_scores = lap_reader.get_scores()
-    running_scores = update_score(running_scores, new_scores)
-    lap_roundup = st.RoundUpSlide(prs, running_scores, title_text)
-
     # Pit Stops
 
     title_text = f"Superlatives: Most Pit Stops"
@@ -381,7 +353,7 @@ def main():
                           running_scores)
     intro.make_slide()
 
-    pit_reader = sig.SuperlativeDriverReader(wb["PitStops"])
+    pit_reader = sig.SuperlativeDriverReader(wb["PitStops"], player_col = 29)
     pit_reader.gather_data()
     pit_data = pit_reader.format_to_slide()
 
@@ -395,46 +367,45 @@ def main():
     running_scores = update_score(running_scores, new_scores)
     pit_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
-    # Slow Starter
+    # Pens
 
-    title_text = f"Superlatives: Most Races to Score"
+    title_text = f"Superlatives: Penalties"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["SlowStarter"],
+                          qd.descriptions["Pens"],
                           running_scores)
     intro.make_slide()
 
-    ss_reader = sig.SuperlativeDriverReader(
-        wb["SlowStarter"],
-        rank_col=4,
-        player_col=31
+    pens_reader = sig.SuperlativeDriverReader(
+        wb["Pens"],
+        player_col=29
         )
-    ss_reader.gather_data()
-    ss_data = ss_reader.format_to_slide()
+    pens_reader.gather_data()
+    pens_data = pens_reader.format_to_slide()
 
-    ss_slide = st.SuperlativeSlide(prs, *ss_data)
-    ss_slide.make_slide()
+    pens_slide = st.SuperlativeSlide(prs, *pens_data)
+    pens_slide.make_slide()
 
-    title_shape = make_title_layout(prs, ss_slide.slide, 4/25)
+    title_shape = make_title_layout(prs, pens_slide.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    new_scores = ss_reader.get_scores()
+    new_scores = pens_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    ss_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    pens_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
     # Points Improver
 
-    title_text = f"Superlatives: Largest Point Improver 2023 to 2024"
+    title_text = f"Superlatives: Largest Point Improver Between Season Halves"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["PointsImprover"],
+                          qd.descriptions["SecondWind"],
                           running_scores)
     intro.make_slide()
 
     delta_reader = sig.SuperlativeDriverReader(
-        wb["PointsImprover"],
-        metric_col=4,
-        rank_col=5,
+        wb["SecondWind"],
+        metric_col=5,
+        rank_col=6,
         player_col=9
     )
     delta_reader.gather_data()
@@ -450,32 +421,33 @@ def main():
     running_scores = update_score(running_scores, new_scores)
     delta_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
-    # Position Improver
+    # Slow Starter
 
-    title_text = f"Superlatives: Most Positions Gained Per Race"
+    title_text = f"Superlatives: Most Races to Score"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["PositionImprover"],
+                          qd.descriptions["SlowStarter"],
                           running_scores)
     intro.make_slide()
 
-    pos_reader = sig.SuperlativeDriverReader(
-        wb["PositionImprover"],
-        metric_col=4,
-        player_col=54
-    )
-    pos_reader.gather_data()
-    pos_data = pos_reader.format_to_slide()
+    ss_reader = sig.SuperlativeDriverReader(
+        wb["SlowStarter"],
+        metric_col=3,
+        rank_col=4,
+        player_col=30
+        )
+    ss_reader.gather_data()
+    ss_data = ss_reader.format_to_slide()
 
-    pos_slide = st.SuperlativeSlide(prs, *pos_data)
-    pos_slide.make_slide()
+    ss_slide = st.SuperlativeSlide(prs, *ss_data)
+    ss_slide.make_slide()
 
-    title_shape = make_title_layout(prs, pos_slide.slide, 4/25)
+    title_shape = make_title_layout(prs, ss_slide.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    new_scores = pos_reader.get_scores()
+    new_scores = ss_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    pos_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    ss_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
     ## Superlative Teams
 
@@ -483,11 +455,11 @@ def main():
     title_text = f"Superlatives: Most Engine Components Used By Teams"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["EngineComponents"],
+                          qd.descriptions["Ngin"],
                           running_scores)
     intro.make_slide()
 
-    ngin_reader = sig.SuperlativeTeamReader(wb["EngineComponents"])
+    ngin_reader = sig.SuperlativeTeamReader(wb["Ngin"])
     ngin_reader.gather_data()
     ngin_data = ngin_reader.format_to_slide()
 
@@ -514,11 +486,11 @@ def main():
         team_col = 32,
         metric_col = 35,
         rank_col = 34,
-        player_col = 39,
-        prediction_col = 40,
-        score_col = 42,
+        player_col = 32,
+        prediction_col = 33,
+        score_col = 35,
         team_row = 4,
-        player_row = 4,
+        player_row = 16,
         team_row_delta=1
     )
     qc_reader.gather_data()
@@ -536,37 +508,37 @@ def main():
 
     # Constructor PSs
 
-    title_text = f"Superlatives: Fastest Pit Stop by Team"
+    title_text = f"Superlatives: Closest Finishing Position Team"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["ConstructorPSs"],
+                          qd.descriptions["ClosestTeam"],
                           running_scores)
     intro.make_slide()
 
-    ps_reader = sig.SuperlativeTeamReader(
-        wb["ConstructorPSs"],
-        team_col=1,
-        player_col=32,
-        prediction_col=33,
-        score_col=35,
-        team_row_delta=1,
-        team_row=3,
-        player_row=4,
-        metric_col=2,
-        rank_col = 3
+    closest_team_reader = sig.SuperlativeTeamReader(
+        wb["ClosestTeam"],
+        team_col = 32,
+        metric_col = 35,
+        rank_col = 34,
+        player_col = 32,
+        prediction_col = 33,
+        score_col = 35,
+        team_row = 4,
+        player_row = 16,
+        team_row_delta=1
     )
-    ps_reader.gather_data()
-    ps_data = ps_reader.format_to_slide()
+    closest_team_reader.gather_data()
+    closest_team_data = closest_team_reader.format_to_slide()
 
-    pc_slide = st.SuperlativeSlide(prs, *ps_data, "Team")
-    pc_slide.make_slide()
+    closest_team_slide = st.SuperlativeSlide(prs, *closest_team_data, "Team")
+    closest_team_slide.make_slide()
 
-    title_shape = make_title_layout(prs, pc_slide.slide, 4/25)
+    title_shape = make_title_layout(prs, closest_team_slide.slide, 4/25)
     make_title_box(title_text, title_shape)
 
-    new_scores = ps_reader.get_scores()
+    new_scores = closest_team_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    pc_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    closest_team_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
     ## Pick 5
     title_text = "Pick 5 Races"
@@ -576,53 +548,53 @@ def main():
                           running_scores)
     intro.make_slide()
 
-    # Gasly
-    title_text = "Pick 5 Races - Gasly Races"
+    # Yuki
+    title_text = "Pick 5 Races - Yuki Quali"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["GaslyPoints"],
+                          qd.descriptions["PastnPukious"],
                           running_scores)
     intro.make_slide()
 
-    gasly_reader = sig.Pick5RacesReader(wb["GaslyPoints"])
-    gasly_reader.gather_data()
-    gasly_data = gasly_reader.format_to_slide()
+    yuki_reader = sig.Pick5RacesReader(wb["PastnPukious"])
+    yuki_reader.gather_data()
+    yuki_data = yuki_reader.format_to_slide()
 
-    gasly_slides = st.Pick5RacesSlide(prs, *gasly_data, running_scores.copy(), "Pick 5 Races - Gasly")
-    gasly_slides.make_slide()
+    yuki_slides = st.Pick5RacesSlide(prs, *yuki_data, running_scores.copy(), "Pick 5 Races - Yuki")
+    yuki_slides.make_slide()
 
-    new_scores = gasly_reader.get_scores()
+    new_scores = yuki_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    gasly_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    yuki_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
-    # Hulk
-    title_text = "Pick 5 Races - Hulk Qualifying"
+    # Bearman
+    title_text = "Pick 5 Races - Bearman Races"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["HulkQuali"],
+                          qd.descriptions["BearHug"],
                           running_scores)
     intro.make_slide()
 
-    hulk_reader = sig.Pick5RacesReader(wb["HulkQuali"])
-    hulk_reader.gather_data()
-    hulk_data = hulk_reader.format_to_slide()
+    bear_reader = sig.Pick5RacesReader(wb["BearHug"])
+    bear_reader.gather_data()
+    bear_data = bear_reader.format_to_slide()
 
-    hulk_slides = st.Pick5RacesSlide(prs, *hulk_data, running_scores.copy(), "Pick 5 Races - Hulk")
-    hulk_slides.make_slide()
+    bear_slides = st.Pick5RacesSlide(prs, *bear_data, running_scores.copy(), "Pick 5 Races - Bearman")
+    bear_slides.make_slide()
 
-    new_scores = hulk_reader.get_scores()
+    new_scores = bear_reader.get_scores()
     running_scores = update_score(running_scores, new_scores)
-    hulk_roundup = st.RoundUpSlide(prs, running_scores, title_text)
+    bear_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
     # Blowy Engines
     title_text = "Pick 5 Races - Blowy Engines"
     intro = st.IntroSlide(prs,
                           title_text,
-                          qd.descriptions["BlowyEngines"],
+                          qd.descriptions["BlowyNgin"],
                           running_scores)
     intro.make_slide()
 
-    blowy_reader = sig.Pick5RacesReader(wb["BlowyEngines"])
+    blowy_reader = sig.Pick5RacesReader(wb["BlowyNgin"])
     blowy_reader.gather_data()
     blowy_data = blowy_reader.format_to_slide()
 
@@ -633,6 +605,6 @@ def main():
     running_scores = update_score(running_scores, new_scores)
     blowy_roundup = st.RoundUpSlide(prs, running_scores, title_text)
 
-    prs.save("theSlidesTM.pptx")
+    prs.save("konkurenz2025.pptx")
 
 main()

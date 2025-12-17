@@ -290,7 +290,7 @@ def main():
     dnf_reader.gather_data()
     dnf_data = dnf_reader.format_to_slide()
 
-    dnf_slide = st.SuperlativeSlide(prs, *dnf_data)
+    dnf_slide = st.SuperlativeSlide(prs, *dnf_data, count_str="DNF Count")
     dnf_slide.make_slide()
 
     title_shape = make_title_layout(prs, dnf_slide.slide, 4/25)
@@ -313,7 +313,7 @@ def main():
     pit_reader.gather_data()
     pit_data = pit_reader.format_to_slide()
 
-    pit_slide = st.SuperlativeSlide(prs, *pit_data)
+    pit_slide = st.SuperlativeSlide(prs, *pit_data, count_str = "Pit Stops")
     pit_slide.make_slide()
 
     title_shape = make_title_layout(prs, pit_slide.slide, 4/25)
@@ -339,7 +339,7 @@ def main():
     pens_reader.gather_data()
     pens_data = pens_reader.format_to_slide()
 
-    pens_slide = st.SuperlativeSlide(prs, *pens_data)
+    pens_slide = st.SuperlativeSlide(prs, *pens_data, "Penalties Sum (s)")
     pens_slide.make_slide()
 
     title_shape = make_title_layout(prs, pens_slide.slide, 4/25)
@@ -367,7 +367,7 @@ def main():
     delta_reader.gather_data()
     delta_data = delta_reader.format_to_slide()
 
-    delta_slide = st.SuperlativeSlide(prs, *delta_data)
+    delta_slide = st.SuperlativeSlide(prs, *delta_data, count_str="Point Diff")
     delta_slide.make_slide()
 
     title_shape = make_title_layout(prs, delta_slide.slide, 4/25)
@@ -395,7 +395,7 @@ def main():
     ss_reader.gather_data()
     ss_data = ss_reader.format_to_slide()
 
-    ss_slide = st.SuperlativeSlide(prs, *ss_data)
+    ss_slide = st.SuperlativeSlide(prs, *ss_data, "Rounds Til Scoring")
     ss_slide.make_slide()
 
     title_shape = make_title_layout(prs, ss_slide.slide, 4/25)
@@ -419,7 +419,7 @@ def main():
     ngin_reader.gather_data()
     ngin_data = ngin_reader.format_to_slide()
 
-    ngin_slide = st.SuperlativeSlide(prs, *ngin_data, "Team")
+    ngin_slide = st.SuperlativeSlide(prs, *ngin_data, "Team", "N of Engine Components")
     ngin_slide.make_slide()
 
     title_shape = make_title_layout(prs, ngin_slide.slide, 4/25)
@@ -452,7 +452,7 @@ def main():
     qc_reader.gather_data()
     qc_data = qc_reader.format_to_slide()
 
-    qc_slide = st.SuperlativeSlide(prs, *qc_data, "Team")
+    qc_slide = st.SuperlativeSlide(prs, *qc_data, "Team", "Quali Average")
     qc_slide.make_slide()
 
     title_shape = make_title_layout(prs, qc_slide.slide, 4/25)
@@ -486,7 +486,7 @@ def main():
     closest_team_reader.gather_data()
     closest_team_data = closest_team_reader.format_to_slide()
 
-    closest_team_slide = st.SuperlativeSlide(prs, *closest_team_data, "Team")
+    closest_team_slide = st.SuperlativeSlide(prs, *closest_team_data, "Team", "Average Position Diff")
     closest_team_slide.make_slide()
 
     title_shape = make_title_layout(prs, closest_team_slide.slide, 4/25)

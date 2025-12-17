@@ -675,7 +675,8 @@ class SuperlativeSlide():
             prs: presentation.Presentation,
             driver_rankings: list[tuple[float, str, int]],
             player_preds: dict[str, tuple[str, int]],
-            slide_type: str = "Driver"
+            slide_type: str = "Driver",
+            count_str: str = "Count"
             ):
         self.prs = prs
         blank_slide_layout = prs.slide_layouts[6]
@@ -684,6 +685,7 @@ class SuperlativeSlide():
         self.driver_rankings = driver_rankings
         self.player_preds = player_preds
         self.type = slide_type
+        self.count_str = count_str
 
     def make_boxes(self):
         ph = Inches(1.0)
@@ -731,7 +733,7 @@ class SuperlativeSlide():
             run.text = text
             run.font.size = Pt(12)
 
-        data = [("Rank", self.type, "Count")]
+        data = [("Rank", self.type, self.count_str)]
         data.extend(self.driver_rankings)
         for i in range(len(data)):
             for j in range(len(data[0])):
@@ -742,8 +744,6 @@ class SuperlativeSlide():
                 p.alignment = PP_ALIGN.LEFT
                 run.text = f"{data[i][j]}"
                 run.font.size = Pt(12)
-                cell.fill.solid()
-                cell.fill.fore_color.rgb = RGBColor(200, 200, 200)
                 cell.margin_bottom = cell.margin_top = Pt(5)
 
     def make_slide(self):
@@ -941,6 +941,8 @@ class Pick5RacesSlide():
                         tf = cell.text_frame
                         run = tf.paragraphs[0].add_run()
                         run.text = player_and_races[k]
+                        run.font.bold = False
+                        run.font.color.rgb = RGBColor(255, 255, 255)
                     score_row = 2 * j + 1
                     pscore_and_scores = [running_round_score[player]] + to_show[player]
                     for k in range(len(pscore_and_scores)):
@@ -948,10 +950,12 @@ class Pick5RacesSlide():
                         tf = cell.text_frame
                         run = tf.paragraphs[0].add_run()
                         run.text = str(pscore_and_scores[k])
+                        run.font.color.rgb = RGBColor(255, 255, 255)
                     player_box = player_boxes[player]
                     tf = player_box.text_frame
                     run = tf.paragraphs[0].add_run()
                     run.text = str(self.running_scores[player])
+                    run.font.color.rgb = RGBColor(255, 255, 255)
 
                 i += 1
 

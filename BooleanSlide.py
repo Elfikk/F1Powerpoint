@@ -142,11 +142,9 @@ class BooleanSlide(Slide):
                             box.fill.fore_color.rgb = RGBColor.from_string(driver_rgb)
                             box.line.color.rgb = RGBColor.from_string(outline_rgb)
                         else:
-                            driver_rgb = (50, 50, 50)
-                            outline_rgb = driver_rgb
-                            box.fill.solid()
-                            box.fill.fore_color.rgb = RGBColor(*driver_rgb)
-                            box.line.color.rgb = RGBColor(*outline_rgb)
+                            outline_rgb = con.TEAMS_TO_COLOURS[con.DRIVERS_TO_TEAMS[driver]][1:]
+                            box.fill.background()
+                            box.line.color.rgb = RGBColor.from_string(outline_rgb)
 
                         if i == 1:
                             box = self.counts[driver]

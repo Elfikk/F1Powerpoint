@@ -64,7 +64,7 @@ class BooleanSlide(Slide):
         # Only on last slide do we show checks
         self.checks = {player : {} for player in self.player_to_truths}
         # And Counts
-        self.counts = {}
+        self.counts = [{}, {}]
         for player, drivers in self.player_to_truths.items():
             for driver, condition in self.driver_cond.items():
                 is_true = condition[1]
@@ -72,11 +72,14 @@ class BooleanSlide(Slide):
                     shape_tree = self.slides[1].shapes
                     self.displayed_drivers[1][player][driver] = shape_tree.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ph, ph, ph, ph)
 
-                    if driver not in self.counts:
-                        self.counts[driver] = shape_tree.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ph, ph, ph, ph)
+                    if driver not in self.counts[0]:
+                        self.counts[0][driver] = shape_tree.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ph, ph, ph, ph)
 
                     shape_tree = self.slides[2].shapes
                     self.displayed_drivers[2][player][driver] = shape_tree.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ph, ph, ph, ph)
+
+                    if driver not in self.counts[1]:
+                        self.counts[1][driver] = shape_tree.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ph, ph, ph, ph)
 
                 # Need ✓ and ✗
                 self.checks[player][driver] = shape_tree.add_shape(
@@ -147,7 +150,16 @@ class BooleanSlide(Slide):
                             box.line.color.rgb = RGBColor.from_string(outline_rgb)
 
                         if i == 1:
-                            box = self.counts[driver]
+                            box = self.counts[0][driver]
+                            box.left = width_offset + 2 * j * widths - widths
+                            box.top = height_offset + 2 * len(self.player_scores) * heights
+                            box.width = 3 * widths
+                            box.height = heights
+
+                            box.fill.background()
+                            box.line.fill.background()
+                        elif i == 2:
+                            box = self.counts[1][driver]
                             box.left = width_offset + 2 * j * widths - widths
                             box.top = height_offset + 2 * len(self.player_scores) * heights
                             box.width = 3 * widths
@@ -208,15 +220,15 @@ class BooleanSlide(Slide):
                         run.font.size = Pt(18)
                         run.font.color.rgb = RGBColor(255, 255, 0)
 
-        for driver, box in self.counts.items():
-            box = self.counts[driver]
-            text_frame = box.text_frame
-            p = text_frame.paragraphs[0]
-            p.alignment = PP_ALIGN.CENTER
-            run = p.add_run()
-            run.text = str(self.driver_cond[driver][0])
-            run.font.size = Pt(10)
-            run.font.color.rgb = RGBColor(255, 255, 255)
+        for counts in self.counts:
+            for driver, box in counts.items():
+                text_frame = box.text_frame
+                p = text_frame.paragraphs[0]
+                p.alignment = PP_ALIGN.CENTER
+                run = p.add_run()
+                run.text = str(self.driver_cond[driver][0])
+                run.font.size = Pt(10)
+                run.font.color.rgb = RGBColor(255, 255, 255)
 
     def make_titles(self):
         for slide in self.slides:

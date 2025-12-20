@@ -1,6 +1,6 @@
 descriptions = {
     "QualiH2H": """Predict the driver in each pairing that will finish ahead in qualifying most often. Excludes Sprint Qualifying.\n+5pts per correct pick, 0 in a draw""",
-    "RaceH2H": """Predict the driver in each pairing that will finish ahead on the road most often (not necessarilly points wise!) in races.Excludes Sprints.\n+5pts per correct pick, 0 in a draw""",
+    "RaceH2H": """Predict the driver in each pairing that will finish ahead on the road most often (not necessarilly points wise!) in races. Excludes Sprint Races.\n+5pts per correct pick, 0 in a draw""",
     "DriverPredictions": """Predict the Driver's Championship order.
 
 You'll get 10 points for being exactly right on a prediction, 9 for being one away, 8 for being 2 out, 7 for 3 out, 5 for 4 out, 2 for 5 out and 0 for further.

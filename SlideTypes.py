@@ -860,8 +860,7 @@ class Pick5RacesSlide():
             base_title: str):
         self.prs = prs
         blank_slide_layout = prs.slide_layouts[6]
-        # self.blank_slide = prs.slides.add_slide(blank_slide_layout)
-        self.slides = [prs.slides.add_slide(blank_slide_layout) for race in con.RACES if race in all_races]
+        self.slides = [prs.slides.add_slide(blank_slide_layout)] + [prs.slides.add_slide(blank_slide_layout) for race in con.RACES if race in all_races]
 
         self.player_preds = player_preds
         self.all_races = all_races
@@ -918,10 +917,11 @@ class Pick5RacesSlide():
         players = list(self.player_preds.keys())
 
         i = 0
-        for race in con.RACES:
+        to_iterate = [""] + con.RACES
+        for race in to_iterate:
             player_boxes = self.player_boxes[i]
             pick5_table = self.pick5_tables[i].table
-            if race in self.all_races:
+            if race in self.all_races or race == "":
                 for player, remaining_preds in player_pred_q.items():
                     if len(remaining_preds) != 0:
                         player_race, score = remaining_preds[0]
@@ -960,7 +960,10 @@ class Pick5RacesSlide():
                 i += 1
 
     def make_titles(self):
-        i = 0
+        slide = self.slides[0]
+        title_box = make_title_layout(self.prs, slide, 4/25)
+        make_title_box(f"{self.base_title}", title_box)
+        i = 1
         for race in con.RACES:
             slide = self.slides[i]
             if race in self.all_races:
